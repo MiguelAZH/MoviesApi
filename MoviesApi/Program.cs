@@ -1,10 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.DAL;
+using MoviesApi.MoviesMapper;
+using MoviesApi.Repository;
+using MoviesApi.Repository.IRepository;
+using MoviesApi.Services;
+using MoviesApi.Services.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<Mappers>());
+
+//dependecy injections for services
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+//dependecy injections for Repositories
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
