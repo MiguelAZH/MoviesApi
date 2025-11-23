@@ -39,11 +39,11 @@ namespace MoviesApi.Services
 
         public async Task<ICollection<CategoryDto>> GetCategoriesAsync()
         {
-            var categories = _categoryRepository.GetCategoriesAsync(); //Llamo al metodo desde la capa de repositorio
+            var categories = await _categoryRepository.GetCategoriesAsync(); //Llamo al metodo desde la capa de repositorio
             return _mapper.Map<ICollection<CategoryDto>>(categories); //mapeo la lista de categorias a una lista de categorias DTO
         }
 
-        public Task<Category?> GetCategoryByIdAsync(int id)
+        public Task<CategoryDto?> GetCategoryByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
