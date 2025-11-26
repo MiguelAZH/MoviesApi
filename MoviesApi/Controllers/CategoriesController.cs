@@ -26,7 +26,7 @@ namespace MoviesApi.Controllers
             return Ok(categories);
         }
 
-        [HttpGet("{id:int}", Name= "GetCategoryByIdAsync")]
+        [HttpGet("{id:int}", Name = "GetCategoryByIdAsync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -46,7 +46,7 @@ namespace MoviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
 
-        public async Task<ActionResult<CategoryDto>> CreateCategoryAsync([FromBody] CategoryCreateDto categoryCreateDto)
+        public async Task<ActionResult<CategoryDto>> CreateCategoryAsync([FromBody] CategoryCreateUpdateDto categoryCreateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace MoviesApi.Controllers
                     new { id = createdCategory.Id },    //2o parametro: los valores de los parametros de la ruta
                     createdCategory);       //3er parametro: el objeto creado
             }
-            catch(InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
+            catch (InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
             {
                 return Conflict(ex.Message);
             }
@@ -70,7 +70,39 @@ namespace MoviesApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-            
+        }
+        [HttpPut("{id:int}",Name = "UpdateCategoryAsync")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+
+        public async Task<ActionResult<CategoryDto>> UpdateCategoryAsync([FromBody] CategoryCreateUpdateDto Dto, int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            try
+            {
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(id, Dto);
+                return Ok(updatedCategory);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
+            {
+                return Conflict(ex.Message);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontro"))
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
 
         }
     }
