@@ -52,7 +52,17 @@ namespace MoviesApi.Services
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            throw new NotImplementedException();
+            //verificar si la categoria existe
+                await GetCategoryByIdAsync(id);
+
+            //eliminar la categoria
+            var categoryDeleted = await _categoryRepository.DeleteCategoryAsync(id);
+
+            if (!categoryDeleted)
+            {
+                throw new Exception("Error al eliminar la categoria");
+            }
+            return categoryDeleted;
         }
 
         public async Task<ICollection<CategoryDto>> GetCategoriesAsync()
@@ -61,22 +71,23 @@ namespace MoviesApi.Services
             return _mapper.Map<ICollection<CategoryDto>>(categories); //mapeo la lista de categorias a una lista de categorias DTO
         }
 
-        public async Task<CategoryDto?> GetCategoryByIdAsync(int id)
+        public async Task<CategoryDto?> GetCategoryAsync(int id)
         {
-            var category = await _categoryRepository.GetCategoryByIdAsync(id); //Llamo al metodo desde la capa de repositorio
+            var category = await _categoryRepository.GetCategoryAsync(id); //Llamo al metodo desde la capa de repositorio
+            
+            if (category == null)
+            {
+                throw new InvalidOperationException($"No se encontro categoria con el ID: '{id}'");
+            }
+            
             return _mapper.Map<CategoryDto>(category); //mapeo la lista de categorias a una lista de categorias DTO
         }
 
         public async Task<CategoryDto> UpdateCategoryAsync(int id, CategoryCreateUpdateDto Dto)
         {
             //validar si la categoria ya existe
-            var categoryExists = await _categoryRepository.GetCategoryByIdAsync(id);
+            var existingCategory = await GetCategoryByIdAsync(id);
 
-            if (categoryExists == null)
-            {
-                throw new InvalidOperationException($"No se encontro categoria con el ID: '{id}'");
-            }
-            
             var NameExists = await _categoryRepository.CategoryExistByNameAsync(Dto.Name);
 
             if (NameExists)
@@ -85,17 +96,28 @@ namespace MoviesApi.Services
             }
 
             //mapear el DTO a la entidad
-            _mapper.Map(Dto, categoryExists);
+            _mapper.Map(Dto, existingCategory);
 
             //actualizar la categoria en el repositorio
-            var categoryUpdated = await _categoryRepository.UpdateCategoryAsync(categoryExists);
+            var categoryUpdated = await _categoryRepository.UpdateCategoryAsync(existingCategory);
 
             if (!categoryUpdated)
             {
                 throw new Exception("Error al actualizar la categoria");
             }
 
-            return _mapper.Map<CategoryDto>(categoryExists);
+            return _mapper.Map<CategoryDto>(existingCategory);
+        }
+        private async Task<Category> GetCategoryByIdAsync(int id)
+        {
+            var category = await _categoryRepository.GetCategoryAsync(id);
+
+            if (category == null)
+            {
+                throw new InvalidOperationException($"No se encontró la categoría con ID: '{id}'");
+            }
+
+            return category;
         }
     }
 }

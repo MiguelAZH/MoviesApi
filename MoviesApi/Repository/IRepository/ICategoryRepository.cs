@@ -5,7 +5,7 @@ namespace MoviesApi.Repository.IRepository
     public interface ICategoryRepository
     {
         Task<ICollection<Category>> GetCategoriesAsync(); // Get all categories
-        Task<Category?> GetCategoryByIdAsync(int id); // Get category by ID
+        Task<Category?> GetCategoryAsync(int id); // Get category by ID
         Task<bool> CategoryExistsByIdAsync(int id); // Check if category exists fot ID
         Task<bool> CategoryExistByNameAsync(string name); // Check if category exists for name
         Task<bool> CreateCategoryAsync(Category category); // Create a new category

@@ -26,16 +26,25 @@ namespace MoviesApi.Controllers
             return Ok(categories);
         }
 
-        [HttpGet("{id:int}", Name = "GetCategoryByIdAsync")]
+        [HttpGet("{id:int}", Name = "GetCategoryAsync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(int id)
+        public async Task<ActionResult<CategoryDto>> GetCategoryAsync(int id)
         {
-            var CategoryDto = await _categoryService.GetCategoryByIdAsync(id);
-            return Ok(CategoryDto);
+
+            try
+            {
+                var categoryDto = await _categoryService.GetCategoryAsync(id);
+                return Ok(categoryDto);
+
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontro"))
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost(Name = "CreateCategoryAsync")]
@@ -57,10 +66,13 @@ namespace MoviesApi.Controllers
             try
             {
                 var createdCategory = await _categoryService.CreateCategoryAsync(categoryCreateDto);
+
+                //Vamos a retornar un 201 Created con la ruta para obtener la categoría creada
                 return CreatedAtRoute(
-                    "GetCategoryByIdAsync",     //1er parametro: nombre de la ruta
-                    new { id = createdCategory.Id },    //2o parametro: los valores de los parametros de la ruta
-                    createdCategory);       //3er parametro: el objeto creado
+                    "GetCategoryAsync",                 //1er parámetro: nombre de la ruta
+                    new { id = createdCategory.Id },    //2o parámetro: los valores de los parámetros de la ruta
+                    createdCategory                     //3er parámetro: el objeto creado
+                    );
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
             {
@@ -95,7 +107,30 @@ namespace MoviesApi.Controllers
             {
                 return Conflict(ex.Message);
             }
-            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontro"))
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontró"))
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+        }
+        [HttpDelete("{id:int}", Name = "DeleteCategoryAsync")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+
+        public async Task<ActionResult> DeleteCategoryAsync(int id)
+        {
+            try
+            {
+                var deletedCategory = await _categoryService.DeleteCategoryAsync(id);
+                return Ok(deletedCategory); //Retorno Ok para mostrar el "true" de la eliminacion
+            }            
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontró"))
             {
                 return NotFound(ex.Message);
             }

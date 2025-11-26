@@ -37,7 +37,7 @@ namespace MoviesApi.Repository
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            var category = await GetCategoryByIdAsync(id);
+            var category = await GetCategoryAsync(id);
 
            if (category == null)
             {
@@ -57,7 +57,7 @@ namespace MoviesApi.Repository
             return categories;
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(int id) //async and await 
+        public async Task<Category?> GetCategoryAsync(int id) //async and await 
         {
             return await _context.Categories
                 .AsNoTracking()
