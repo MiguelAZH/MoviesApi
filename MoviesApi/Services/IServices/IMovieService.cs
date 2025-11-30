@@ -4,12 +4,12 @@ namespace MoviesApi.Services.IServices
 {
     public interface IMovieService
     {
-        Task<ICollection<CategoryDto>> GetCategoriesAsync();
-        Task<CategoryDto?> GetCategoryAsync(int id);
-        Task<CategoryDto> CreateCategoryAsync(CategoryCreateUpdateDto categoryDto);
-        Task<CategoryDto> UpdateCategoryAsync(int id, CategoryCreateUpdateDto Dto);
-        Task<bool> CategoryExistsByIdAsync(int id);
-        Task<bool> DeleteCategoryAsync(int id);
-        Task<bool> CategoryExistByNameAsync(string name);
+        Task<ICollection<MovieDto>> GetMoviesAsync();
+        Task<MovieDto?> GetMovieAsync(int id);
+        Task<MovieDto> CreateMovieAsync(MovieCreateUpdateDto movieDto);
+        Task<MovieDto> UpdateMovieAsync(int id, MovieCreateUpdateDto Dto);
+        Task<bool> MovieExistsByIdAsync(int id);
+        Task<bool> DeleteMovieAsync(int id);
+        Task<bool> MovieExistByNameAsync(string name);
     }
 }
