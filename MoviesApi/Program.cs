@@ -14,10 +14,11 @@ builder.Services.AddAutoMapper(cfg => cfg.AddProfile<Mappers>());
 
 //dependecy injections for services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
 
 //dependecy injections for Repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -37,7 +37,7 @@ namespace MoviesApi.Services
                 throw new InvalidOperationException($"Ya existe una pelicula con el nombre '{movieDto.Name}'");
             }
 
-            var movie =_mapper.Map<Movie>(movieExists);
+            var movie =_mapper.Map<Movie>(movieDto);
 
             var movieCreated = await _movieRepository.CreateMovieAsync(movie);
 
@@ -73,7 +73,7 @@ namespace MoviesApi.Services
 
             if (movie == null)
             {
-                throw new InvalidOperationException($"No se encontro categoria con el ID: '{id}'");
+                throw new InvalidOperationException($"No se encontro pelicula con el ID: '{id}'");
             }
             return _mapper.Map<MovieDto>(movie);
         }
